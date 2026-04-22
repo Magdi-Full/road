@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>2026: Road to Middle</title>
+    <title>Fullstack Mastery 2026</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
       rel="stylesheet"
@@ -15,16 +15,16 @@
       :root {
         --primary: #00f2fe;
         --secondary: #4facfe;
+        --accent: #ff79c6;
+        --danger: #ff5555;
         --bg: #0f172a;
         --card-bg: rgba(255, 255, 255, 0.05);
         --glass-border: rgba(255, 255, 255, 0.1);
       }
-
       * {
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
       }
-
       body {
         background: radial-gradient(circle at top right, #1e293b, #0f172a);
         color: #fff;
@@ -33,83 +33,87 @@
         padding: 15px;
         min-height: 100vh;
       }
-
       .container {
         max-width: 1200px;
         margin: 0 auto;
       }
-
       header {
         text-align: center;
-        padding: 25px 15px;
+        padding: 20px;
         background: var(--card-bg);
         border-radius: 20px;
         backdrop-filter: blur(10px);
         border: 1px solid var(--glass-border);
         margin-bottom: 20px;
       }
-
       h1 {
         font-family: "Orbitron", sans-serif;
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         background: linear-gradient(to right, var(--primary), var(--secondary));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin: 0;
       }
 
-      /* Stats Section */
       .stats-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* 2 колонки на мобилках */
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
       }
-
       .stat-card {
         background: var(--card-bg);
-        padding: 15px;
+        padding: 12px;
         border-radius: 15px;
         border: 1px solid var(--glass-border);
         text-align: center;
       }
-
       .stat-value {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         font-weight: bold;
         color: var(--primary);
         display: block;
       }
-
+      .stat-skipped {
+        color: var(--danger) !important;
+      }
       .stat-label {
-        font-size: 0.8rem;
-        opacity: 0.8;
+        font-size: 0.7rem;
+        opacity: 0.7;
       }
 
-      /* Calendar Grid */
       .calendar-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 10px;
       }
-
       .day-card {
         background: var(--card-bg);
-        padding: 15px 10px;
+        padding: 12px;
         border-radius: 12px;
         border: 1px solid var(--glass-border);
         cursor: pointer;
-        transition: transform 0.2s;
         text-align: center;
-        font-size: 0.9rem;
+        transition: 0.3s;
+        position: relative;
       }
-
+      .day-card.skipped {
+        border-color: var(--danger);
+        background: rgba(255, 85, 85, 0.1);
+        cursor: not-allowed;
+        opacity: 0.8;
+      }
       .day-card.today {
         border: 2px solid var(--primary);
-        background: rgba(0, 242, 254, 0.1);
+        box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+      }
+      .chill-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-size: 0.8rem;
       }
 
-      /* Modal */
       #day-modal {
         display: none;
         position: fixed;
@@ -124,58 +128,50 @@
         align-items: center;
         padding: 20px;
       }
-
       .modal-content {
         background: #1e293b;
         padding: 25px;
         border-radius: 20px;
         width: 100%;
-        max-width: 450px;
+        max-width: 400px;
         border: 1px solid var(--primary);
       }
-
       .task-item {
         display: flex;
         align-items: center;
         background: rgba(255, 255, 255, 0.05);
-        padding: 18px; /* Больше область нажатия для пальца */
-        margin-bottom: 12px;
-        border-radius: 12px;
-        cursor: pointer;
+        padding: 14px;
+        margin-bottom: 10px;
+        border-radius: 10px;
       }
-
       .task-item input {
-        width: 24px;
-        height: 24px;
-        margin-right: 15px;
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
       }
-
+      .time-tag {
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: var(--secondary);
+        font-weight: bold;
+      }
       .close-btn {
         background: linear-gradient(to right, var(--primary), var(--secondary));
         border: none;
-        padding: 15px;
-        border-radius: 12px;
+        padding: 14px;
+        border-radius: 10px;
         color: #000;
         font-weight: bold;
         width: 100%;
-        margin-top: 15px;
-        font-size: 1rem;
+        cursor: pointer;
       }
 
-      /* Планшеты и ПК */
       @media (min-width: 768px) {
         h1 {
-          font-size: 2.5rem;
+          font-size: 2rem;
         }
         .stats-grid {
-          grid-template-columns: repeat(4, 1fr);
-        }
-        .stat-value {
-          font-size: 1.8rem;
-        }
-        .day-card {
-          padding: 20px;
-          font-size: 1rem;
+          grid-template-columns: repeat(5, 1fr);
         }
       }
     </style>
@@ -183,35 +179,41 @@
   <body>
     <div class="container">
       <header>
-        <h1>FUTURE MIDDLE DEV</h1>
-        <p style="font-size: 0.9rem; margin-top: 5px; opacity: 0.7">
-          15 y.o. • Progress Tracker
-        </p>
+        <h1>FULLSTACK ELITE 2026</h1>
+        <div
+          id="status-bar"
+          style="font-size: 0.8rem; margin-top: 5px; color: var(--secondary)"
+        >
+          System Online
+        </div>
       </header>
 
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="stat-value" id="days-left">0</span>
-          <span class="stat-label">Дней до 2027</span>
+          <span class="stat-value" id="days-left">0</span
+          ><span class="stat-label">До 2027</span>
         </div>
         <div class="stat-card">
-          <span class="stat-value" id="tasks-completed">0</span>
-          <span class="stat-label">Done Tasks</span>
+          <span class="stat-value" id="tasks-done">0</span
+          ><span class="stat-label">Выполнено</span>
         </div>
         <div class="stat-card">
-          <span class="stat-value" id="days-streak">0</span>
-          <span class="stat-label">Дней в пути</span>
+          <span class="stat-value stat-skipped" id="days-skipped">0</span
+          ><span class="stat-label">Пропущено</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="days-streak">0</span
+          ><span class="stat-label">День в пути</span>
         </div>
         <div
           class="stat-card"
           id="gf-card"
           onclick="toggleGF()"
-          style="cursor: pointer; transition: 0.3s"
+          style="cursor: pointer"
         >
-          <span class="stat-value" id="gf-status" style="color: #ff79c6"
-            >Searching</span
-          >
-          <span class="stat-label">Girlfriend Status</span>
+          <span class="stat-value" id="gf-status" style="color: var(--accent)"
+            >Search</span
+          ><span class="stat-label">GF Status</span>
         </div>
       </div>
 
@@ -220,8 +222,11 @@
 
     <div id="day-modal">
       <div class="modal-content">
-        <h2 id="modal-date" style="color: var(--primary); margin-top: 0"></h2>
-        <div class="task-list" id="tasks-container"></div>
+        <h2
+          id="modal-date"
+          style="color: var(--primary); margin-top: 0; font-size: 1.1rem"
+        ></h2>
+        <div id="tasks-container"></div>
         <button class="close-btn" onclick="closeModal()">СОХРАНИТЬ</button>
       </div>
     </div>
@@ -229,139 +234,152 @@
     <script>
       const startDate = new Date(2026, 3, 22);
       const endDate = new Date(2027, 0, 1);
-      const dailyTasks = [
-        "💻 Frontend Coding (Middle Level)",
-        "🏋️‍♂️ Work Out (Aesthetic Body)",
-        "💧 Water: 7 Glasses",
-        "📏 Posture/Height Exercises",
-        "💬 Social/Girlfriend Hunt",
-      ];
+
+      function getDailyPlan(dateStr) {
+        // Детерминированный рандом на основе даты
+        const seed = dateStr.split("-").reduce((a, b) => a + parseInt(b), 0);
+        const isChillDay = seed % 7 === 0; // Каждый 7-й день рандомно (примерно)
+        const totalHours = isChillDay ? 3 : 5 + (seed % 2); // 3 часа в чилл, 5-6 в обычный
+
+        return {
+          isChillDay,
+          hours: {
+            coding: Math.floor(totalHours * 0.6),
+            sport: Math.ceil(totalHours * 0.2),
+            other: 1,
+          },
+        };
+      }
 
       function init() {
-        updateStats();
         renderCalendar();
+        updateStats();
+        loadGFStatus();
       }
 
       function updateStats() {
         const today = new Date();
-        const diff = endDate - today;
+        today.setHours(0, 0, 0, 0);
+
         document.getElementById("days-left").innerText = Math.max(
           0,
-          Math.floor(diff / (1000 * 60 * 60 * 24)),
+          Math.floor((endDate - today) / 86400000),
+        );
+        document.getElementById("days-streak").innerText = Math.max(
+          0,
+          Math.floor((today - startDate) / 86400000) + 1,
         );
 
-        const streak =
-          Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
-        document.getElementById("days-streak").innerText =
-          streak > 0 ? streak : 0;
-
-        let total = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-          if (
-            localStorage.key(i).includes("-task-") &&
-            localStorage.getItem(localStorage.key(i)) === "true"
-          ) {
-            total++;
-          }
+        let done = 0,
+          skipped = 0;
+        let curr = new Date(startDate);
+        while (curr < today) {
+          const key = curr.toISOString().split("T")[0];
+          const tasks = [0, 1, 2, 3, 4].map(
+            (i) => localStorage.getItem(`${key}-task-${i}`) === "true",
+          );
+          if (tasks.every((t) => !t)) skipped++;
+          done += tasks.filter((t) => t).length;
+          curr.setDate(curr.getDate() + 1);
         }
-        document.getElementById("tasks-completed").innerText = total;
+        document.getElementById("tasks-done").innerText = done;
+        document.getElementById("days-skipped").innerText = skipped;
       }
 
       function renderCalendar() {
         const container = document.getElementById("calendar");
         let current = new Date(startDate);
-        const todayStr = new Date().toDateString();
+        const todayStr = new Date().toISOString().split("T")[0];
 
         while (current < endDate) {
-          const card = document.createElement("div");
           const dateKey = current.toISOString().split("T")[0];
-          const isToday = current.toDateString() === todayStr;
+          const isToday = dateKey === todayStr;
+          const isPast = current < new Date().setHours(0, 0, 0, 0);
 
-          card.className = `day-card ${isToday ? "today" : ""}`;
+          // Проверка на пропуск
+          let isSkipped = false;
+          if (isPast && !isToday) {
+            const dayTasks = [0, 1, 2, 3, 4].map(
+              (i) => localStorage.getItem(`${dateKey}-task-${i}`) === "true",
+            );
+            if (dayTasks.every((t) => !t)) isSkipped = true;
+          }
+
+          const plan = getDailyPlan(dateKey);
+          const card = document.createElement("div");
+          card.className = `day-card ${isToday ? "today" : ""} ${isSkipped ? "skipped" : ""}`;
           card.innerHTML = `
-                <strong>${current.toLocaleDateString("ru-RU", { weekday: "short" })}</strong><br>
-                ${current.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}
+                ${plan.isChillDay ? '<span class="chill-icon">🌴</span>' : ""}
+                <div style="font-size: 0.7rem; opacity: 0.6;">${current.toLocaleDateString("ru-RU", { weekday: "short" })}</div>
+                <div style="font-weight: bold;">${current.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}</div>
             `;
 
-          const dateTitle = current.toLocaleDateString("ru-RU", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-          });
-          card.onclick = () => openModal(dateKey, dateTitle);
+          if (!isSkipped) {
+            card.onclick = () =>
+              openModal(
+                dateKey,
+                current.toLocaleDateString("ru-RU", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                }),
+                plan,
+              );
+          }
 
           container.appendChild(card);
           current.setDate(current.getDate() + 1);
         }
       }
 
-      function openModal(key, title) {
-        document.getElementById("modal-date").innerText = title;
+      function openModal(key, title, plan) {
+        document.getElementById("modal-date").innerText =
+          title + (plan.isChillDay ? " (CHILL DAY 🌴)" : "");
         const container = document.getElementById("tasks-container");
         container.innerHTML = "";
 
-        dailyTasks.forEach((task, index) => {
-          const storageKey = `${key}-task-${index}`;
-          const isDone = localStorage.getItem(storageKey) === "true";
+        const tasks = [
+          { n: `💻 Fullstack Code`, h: plan.hours.coding },
+          { n: `🏋️‍♂️ Aesthetic WorkOut`, h: plan.hours.sport },
+          { n: `💧 Water: 7 Glasses`, h: 0 },
+          { n: `📏 Posture/Height`, h: 0.5 },
+          { n: `💬 Social/GF Hunt`, h: plan.hours.other },
+        ];
 
+        tasks.forEach((t, i) => {
+          const sKey = `${key}-task-${i}`;
+          const isDone = localStorage.getItem(sKey) === "true";
           const div = document.createElement("div");
           div.className = "task-item";
-          div.onclick = (e) => {
-            if (e.target.tagName !== "INPUT") {
-              const cb = div.querySelector("input");
-              cb.checked = !cb.checked;
-              save(storageKey, cb.checked);
-            }
-          };
-
           div.innerHTML = `
-                <input type="checkbox" ${isDone ? "checked" : ""} onchange="save('${storageKey}', this.checked)">
-                <span>${task}</span>
+                <input type="checkbox" ${isDone ? "checked" : ""} onchange="localStorage.setItem('${sKey}', this.checked); updateStats();">
+                <span style="font-size: 0.85rem;">${t.n}</span>
+                ${t.h > 0 ? `<span class="time-tag">${t.h}h</span>` : ""}
             `;
           container.appendChild(div);
         });
         document.getElementById("day-modal").style.display = "flex";
       }
 
-      function save(key, val) {
-        localStorage.setItem(key, val);
-        updateStats();
+      function toggleGF() {
+        const s = document.getElementById("gf-status");
+        const c = document.getElementById("gf-card");
+        const found = s.innerText !== "FOUND ❤️";
+        s.innerText = found ? "FOUND ❤️" : "Search";
+        c.style.background = found
+          ? "rgba(255, 121, 198, 0.2)"
+          : "var(--card-bg)";
+        localStorage.setItem("gf-status", found ? "found" : "search");
+      }
+
+      function loadGFStatus() {
+        if (localStorage.getItem("gf-status") === "found") toggleGF();
       }
 
       function closeModal() {
         document.getElementById("day-modal").style.display = "none";
       }
-
       init();
-
-      // Функция переключения статуса отношений
-      function toggleGF() {
-        const statusEl = document.getElementById("gf-status");
-        const cardEl = document.getElementById("gf-card");
-
-        if (statusEl.innerText === "Searching") {
-          statusEl.innerText = "FOUND ❤️";
-          cardEl.style.background = "rgba(255, 121, 198, 0.2)"; // Розовый оттенок
-          localStorage.setItem("gf-status", "found");
-        } else {
-          statusEl.innerText = "Searching";
-          cardEl.style.background = "rgba(255, 255, 255, 0.05)";
-          localStorage.setItem("gf-status", "searching");
-        }
-      }
-
-      // Проверка статуса при загрузке страницы (добавь это внутрь функции init)
-      function loadGFStatus() {
-        const savedStatus = localStorage.getItem("gf-status");
-        if (savedStatus === "found") {
-          const statusEl = document.getElementById("gf-status");
-          const cardEl = document.getElementById("gf-card");
-          statusEl.innerText = "FOUND ❤️";
-          cardEl.style.background = "rgba(255, 121, 198, 0.2)";
-        }
-      }
-
-      // Не забудь вызвать loadGFStatus() внутри твоей основной функции init()!
     </script>
   </body>
 </html>
