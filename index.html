@@ -202,9 +202,16 @@
           <span class="stat-value" id="days-streak">0</span>
           <span class="stat-label">Дней в пути</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-value" style="color: #ff79c6">Searching</span>
-          <span class="stat-label">Girlfriend</span>
+        <div
+          class="stat-card"
+          id="gf-card"
+          onclick="toggleGF()"
+          style="cursor: pointer; transition: 0.3s"
+        >
+          <span class="stat-value" id="gf-status" style="color: #ff79c6"
+            >Searching</span
+          >
+          <span class="stat-label">Girlfriend Status</span>
         </div>
       </div>
 
@@ -326,6 +333,35 @@
       }
 
       init();
+
+      // Функция переключения статуса отношений
+      function toggleGF() {
+        const statusEl = document.getElementById("gf-status");
+        const cardEl = document.getElementById("gf-card");
+
+        if (statusEl.innerText === "Searching") {
+          statusEl.innerText = "FOUND ❤️";
+          cardEl.style.background = "rgba(255, 121, 198, 0.2)"; // Розовый оттенок
+          localStorage.setItem("gf-status", "found");
+        } else {
+          statusEl.innerText = "Searching";
+          cardEl.style.background = "rgba(255, 255, 255, 0.05)";
+          localStorage.setItem("gf-status", "searching");
+        }
+      }
+
+      // Проверка статуса при загрузке страницы (добавь это внутрь функции init)
+      function loadGFStatus() {
+        const savedStatus = localStorage.getItem("gf-status");
+        if (savedStatus === "found") {
+          const statusEl = document.getElementById("gf-status");
+          const cardEl = document.getElementById("gf-card");
+          statusEl.innerText = "FOUND ❤️";
+          cardEl.style.background = "rgba(255, 121, 198, 0.2)";
+        }
+      }
+
+      // Не забудь вызвать loadGFStatus() внутри твоей основной функции init()!
     </script>
   </body>
 </html>
