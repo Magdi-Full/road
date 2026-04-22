@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Fullstack Mastery 2026</title>
+    <title>Bishkek Fullstack Dev 2026</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
       rel="stylesheet"
@@ -48,7 +48,7 @@
       }
       h1 {
         font-family: "Orbitron", sans-serif;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         background: linear-gradient(to right, var(--primary), var(--secondary));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -84,7 +84,7 @@
 
       .calendar-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
         gap: 10px;
       }
       .day-card {
@@ -99,19 +99,18 @@
       }
       .day-card.skipped {
         border-color: var(--danger);
-        background: rgba(255, 85, 85, 0.1);
-        cursor: not-allowed;
+        background: rgba(255, 85, 85, 0.15);
         opacity: 0.8;
       }
       .day-card.today {
         border: 2px solid var(--primary);
-        box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
       }
       .chill-icon {
         position: absolute;
-        top: 5px;
-        right: 5px;
-        font-size: 0.8rem;
+        top: 4px;
+        right: 4px;
+        font-size: 0.7rem;
       }
 
       #day-modal {
@@ -121,7 +120,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.95);
         backdrop-filter: blur(10px);
         z-index: 1000;
         justify-content: center;
@@ -145,8 +144,8 @@
         border-radius: 10px;
       }
       .task-item input {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         margin-right: 12px;
       }
       .time-tag {
@@ -164,6 +163,7 @@
         font-weight: bold;
         width: 100%;
         cursor: pointer;
+        margin-top: 10px;
       }
 
       @media (min-width: 768px) {
@@ -179,12 +179,11 @@
   <body>
     <div class="container">
       <header>
-        <h1>FULLSTACK ELITE 2026</h1>
+        <h1>BISHKEK FULLSTACK 2026</h1>
         <div
-          id="status-bar"
-          style="font-size: 0.8rem; margin-top: 5px; color: var(--secondary)"
+          style="font-size: 0.7rem; color: var(--secondary); margin-top: 5px"
         >
-          System Online
+          Timezone: Bishkek (UTC+6)
         </div>
       </header>
 
@@ -195,15 +194,15 @@
         </div>
         <div class="stat-card">
           <span class="stat-value" id="tasks-done">0</span
-          ><span class="stat-label">Выполнено</span>
+          ><span class="stat-label">Задач</span>
         </div>
         <div class="stat-card">
           <span class="stat-value stat-skipped" id="days-skipped">0</span
-          ><span class="stat-label">Пропущено</span>
+          ><span class="stat-label">Пропуски</span>
         </div>
         <div class="stat-card">
           <span class="stat-value" id="days-streak">0</span
-          ><span class="stat-label">День в пути</span>
+          ><span class="stat-label">Дней в пути</span>
         </div>
         <div
           class="stat-card"
@@ -213,7 +212,7 @@
         >
           <span class="stat-value" id="gf-status" style="color: var(--accent)"
             >Search</span
-          ><span class="stat-label">GF Status</span>
+          ><span class="stat-label">Girlfriend</span>
         </div>
       </div>
 
@@ -227,7 +226,9 @@
           style="color: var(--primary); margin-top: 0; font-size: 1.1rem"
         ></h2>
         <div id="tasks-container"></div>
-        <button class="close-btn" onclick="closeModal()">СОХРАНИТЬ</button>
+        <button class="close-btn" onclick="closeModal()">
+          СОХРАНИТЬ ПРОГРЕСС
+        </button>
       </div>
     </div>
 
@@ -235,11 +236,16 @@
       const startDate = new Date(2026, 3, 22);
       const endDate = new Date(2027, 0, 1);
 
+      // Помощник для работы с локальной датой (UTC+6 Бишкек)
+      function getLocalDateStr(date) {
+        const offset = date.getTimezoneOffset() * 60000;
+        return new Date(date.getTime() - offset).toISOString().split("T")[0];
+      }
+
       function getDailyPlan(dateStr) {
-        // Детерминированный рандом на основе даты
         const seed = dateStr.split("-").reduce((a, b) => a + parseInt(b), 0);
-        const isChillDay = seed % 7 === 0; // Каждый 7-й день рандомно (примерно)
-        const totalHours = isChillDay ? 3 : 5 + (seed % 2); // 3 часа в чилл, 5-6 в обычный
+        const isChillDay = seed % 6 === 0;
+        const totalHours = isChillDay ? 3 : seed % 2 === 0 ? 5 : 6;
 
         return {
           isChillDay,
@@ -251,67 +257,60 @@
         };
       }
 
-      function init() {
-        renderCalendar();
-        updateStats();
-        loadGFStatus();
-      }
-
       function updateStats() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        document.getElementById("days-left").innerText = Math.max(
-          0,
-          Math.floor((endDate - today) / 86400000),
-        );
-        document.getElementById("days-streak").innerText = Math.max(
-          0,
-          Math.floor((today - startDate) / 86400000) + 1,
-        );
-
+        const todayStr = getLocalDateStr(new Date());
         let done = 0,
           skipped = 0;
         let curr = new Date(startDate);
-        while (curr < today) {
-          const key = curr.toISOString().split("T")[0];
-          const tasks = [0, 1, 2, 3, 4].map(
-            (i) => localStorage.getItem(`${key}-task-${i}`) === "true",
-          );
-          if (tasks.every((t) => !t)) skipped++;
-          done += tasks.filter((t) => t).length;
+
+        while (getLocalDateStr(curr) <= getLocalDateStr(new Date())) {
+          const key = getLocalDateStr(curr);
+          let hasAny = false;
+          for (let i = 0; i < 5; i++) {
+            if (localStorage.getItem(`${key}-task-${i}`) === "true") {
+              done++;
+              hasAny = true;
+            }
+          }
+          if (!hasAny && key < todayStr) skipped++;
           curr.setDate(curr.getDate() + 1);
         }
+
+        document.getElementById("days-left").innerText = Math.max(
+          0,
+          Math.floor((endDate - new Date()) / 86400000),
+        );
         document.getElementById("tasks-done").innerText = done;
         document.getElementById("days-skipped").innerText = skipped;
+        document.getElementById("days-streak").innerText =
+          Math.floor((new Date() - startDate) / 86400000) + 1;
       }
 
       function renderCalendar() {
         const container = document.getElementById("calendar");
+        container.innerHTML = "";
         let current = new Date(startDate);
-        const todayStr = new Date().toISOString().split("T")[0];
+        const todayStr = getLocalDateStr(new Date());
 
         while (current < endDate) {
-          const dateKey = current.toISOString().split("T")[0];
+          const dateKey = getLocalDateStr(current);
           const isToday = dateKey === todayStr;
-          const isPast = current < new Date().setHours(0, 0, 0, 0);
+          const isPast = dateKey < todayStr;
 
-          // Проверка на пропуск
-          let isSkipped = false;
-          if (isPast && !isToday) {
-            const dayTasks = [0, 1, 2, 3, 4].map(
-              (i) => localStorage.getItem(`${dateKey}-task-${i}`) === "true",
-            );
-            if (dayTasks.every((t) => !t)) isSkipped = true;
-          }
+          let hasActivity = false;
+          for (let i = 0; i < 5; i++)
+            if (localStorage.getItem(`${dateKey}-task-${i}`) === "true")
+              hasActivity = true;
 
+          const isSkipped = isPast && !hasActivity;
           const plan = getDailyPlan(dateKey);
+
           const card = document.createElement("div");
           card.className = `day-card ${isToday ? "today" : ""} ${isSkipped ? "skipped" : ""}`;
           card.innerHTML = `
                 ${plan.isChillDay ? '<span class="chill-icon">🌴</span>' : ""}
-                <div style="font-size: 0.7rem; opacity: 0.6;">${current.toLocaleDateString("ru-RU", { weekday: "short" })}</div>
-                <div style="font-weight: bold;">${current.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}</div>
+                <div style="font-size: 0.65rem; opacity: 0.6;">${current.toLocaleDateString("ru-RU", { weekday: "short" })}</div>
+                <div style="font-weight: bold; font-size: 0.9rem;">${current.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}</div>
             `;
 
           if (!isSkipped) {
@@ -334,16 +333,16 @@
 
       function openModal(key, title, plan) {
         document.getElementById("modal-date").innerText =
-          title + (plan.isChillDay ? " (CHILL DAY 🌴)" : "");
+          title + (plan.isChillDay ? " 🌴" : "");
         const container = document.getElementById("tasks-container");
         container.innerHTML = "";
 
         const tasks = [
-          { n: `💻 Fullstack Code`, h: plan.hours.coding },
-          { n: `🏋️‍♂️ Aesthetic WorkOut`, h: plan.hours.sport },
+          { n: `💻 Fullstack Practice`, h: plan.hours.coding },
+          { n: `🏋️‍♂️ Aesthetic Body`, h: plan.hours.sport },
           { n: `💧 Water: 7 Glasses`, h: 0 },
-          { n: `📏 Posture/Height`, h: 0.5 },
-          { n: `💬 Social/GF Hunt`, h: plan.hours.other },
+          { n: `📏 Posture / Height`, h: 0.5 },
+          { n: `💬 Socializing`, h: plan.hours.other },
         ];
 
         tasks.forEach((t, i) => {
@@ -352,9 +351,9 @@
           const div = document.createElement("div");
           div.className = "task-item";
           div.innerHTML = `
-                <input type="checkbox" ${isDone ? "checked" : ""} onchange="localStorage.setItem('${sKey}', this.checked); updateStats();">
+                <input type="checkbox" ${isDone ? "checked" : ""} onchange="localStorage.setItem('${sKey}', this.checked); updateStats(); renderCalendar();">
                 <span style="font-size: 0.85rem;">${t.n}</span>
-                ${t.h > 0 ? `<span class="time-tag">${t.h}h</span>` : ""}
+                ${t.h > 0 ? `<span class="time-tag">${t.h}ч</span>` : ""}
             `;
           container.appendChild(div);
         });
@@ -373,13 +372,21 @@
       }
 
       function loadGFStatus() {
-        if (localStorage.getItem("gf-status") === "found") toggleGF();
+        if (localStorage.getItem("gf-status") === "found") {
+          document.getElementById("gf-status").innerText = "FOUND ❤️";
+          document.getElementById("gf-card").style.background =
+            "rgba(255, 121, 198, 0.2)";
+        }
       }
 
       function closeModal() {
         document.getElementById("day-modal").style.display = "none";
       }
-      init();
+
+      // Запуск
+      loadGFStatus();
+      updateStats();
+      renderCalendar();
     </script>
   </body>
 </html>
